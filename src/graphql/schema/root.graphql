@@ -1,0 +1,6 @@
+# import User from "../../modules/user/user.graphql"
+type Query {
+    users(filter: String, sort: String): [User],
+    getUsers(filter: String, page: Int, limit: Int): UserResult,
+    user(id: ID!): User
+}

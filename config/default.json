@@ -1,0 +1,16 @@
+{
+  "development": {
+    "username": "root",
+    "password": "123456",
+    "database": "messenger",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "kL4yBE4Pzr",
+    "password": "k8rGhuoIre",
+    "database": "kL4yBE4Pzr",
+    "host": "remotemysql.com",
+    "dialect": "mysql"
+  }
+}
