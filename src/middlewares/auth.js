@@ -11,7 +11,8 @@ export const auth = async (req, res, next) => {
         const authHeader = req.headers['authorization'];
         const token = authHeader && authHeader.replace("Bearer ", "");
         if (!token) throw new Error(i18n.__("user.unauthenticated"));
-        await verify(token, secret.jwt_key);
+        const {user: {id}} = await verify(token, secret.jwt_key);
+        req.app.locals.usersId = id;
         next()
     } catch (error) {
         logger.error(`Authentication ${error.message}`);

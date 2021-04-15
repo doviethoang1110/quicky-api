@@ -1,8 +1,5 @@
 import Joi from 'joi';
-import i18n from 'i18n';
-import responseMessages from "../../helpers/responseMessages";
 import validator from "../../helpers/validator";
-import HttpStatusCode from '../../constants';
 
 const DEFAULT_SCHEMA = {
     name: Joi.string()
@@ -32,14 +29,7 @@ export const userUpdate = async (req, res, next) => {
     });
     const result = schema.validate(body);
     const error = validator.joi(result);
-    if (Object.keys(error).length > 0) {
-        res.json(responseMessages.responseError(
-            HttpStatusCode.INVALID_PARAMETER,
-            error,
-            i18n.__("user.register.invalidParameter")
-        ));
-        return;
-    }
+    if (error) res.json(error);
     next();
 };
 
@@ -51,14 +41,7 @@ export const userChangePassword = async (req, res, next) => {
     }).with('confirmPassword', 'newPassword');
     const result = schema.validate(req.body);
     const error = validator.joi(result);
-    if (Object.keys(error).length > 0) {
-        res.json(responseMessages.responseError(
-            HttpStatusCode.INVALID_PARAMETER,
-            error,
-            i18n.__("user.register.invalidParameter")
-        ));
-        return;
-    }
+    if (error) res.json(error);
     next();
 };
 
@@ -68,13 +51,6 @@ export const userChangeImage = async (req, res, next) => {
     });
     const result = schema.validate(req.body);
     const error = validator.joi(result);
-    if (Object.keys(error).length > 0) {
-        res.json(responseMessages.responseError(
-            HttpStatusCode.INVALID_PARAMETER,
-            error,
-            i18n.__("user.register.invalidParameter")
-        ));
-        return;
-    }
+    if (error) res.json(error);
     next();
 };

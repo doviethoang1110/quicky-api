@@ -96,11 +96,12 @@ class ModelEntity {
      * @param {Object} options
      */
     static destroy(model, options) {
-        return Promise.try(() => {
-            return model.destroy(options);
-        }).catch(error => {
-            throw error;
-        });
+        return model.destroy(options)
+            .catch(error => {
+                console.log(error);
+                logger.error(`${model} entity delete error`, error)
+                throw error;
+            });
     }
 
     /**
@@ -122,7 +123,7 @@ class ModelEntity {
      * @param {Object} options
      */
     static findAll(model, options) {
-        return model.findAll(entity, options)
+        return model.findAll(options)
             .catch(error => {
                 logger.error(`${model} entity find all error`, error)
                 throw error;

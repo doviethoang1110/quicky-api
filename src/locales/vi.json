@@ -10,6 +10,7 @@
 	"user.active.key.invalid": "Chuỗi kích hoặc tài khoản không hợp lệ",
 	"user.active.key.timeout": "Chuỗi kích hoạt hết hạn",
 	"notfound": "Không tìm thấy",
+	"exist": "Bản ghi đã tồn tại",
 	"success": "Thành công",
 	"failure": "Thất bại"
 }

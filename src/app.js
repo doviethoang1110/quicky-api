@@ -20,6 +20,7 @@ import i18n from './middlewares/i18n';
 
 // import middleware
 import middleware from './middlewares';
+import {noteRoutes} from "./modules/note/note.route";
 
 // Cors
 const corsOptions = {
@@ -35,6 +36,7 @@ require('./utils/database');
 // import routers
 const usersRouter = userRoutes(express.Router());
 const authRouter = authRoutes(express.Router());
+const noteRouter = noteRoutes(express.Router());
 
 
 const app = express();
@@ -65,5 +67,6 @@ app.use('/api/v1', cors(corsOptions));
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/', middleware.auth);
 app.use('/api/v1/users', usersRouter);
+app.use('/api/v1/notes', noteRouter);
 
 module.exports = app;

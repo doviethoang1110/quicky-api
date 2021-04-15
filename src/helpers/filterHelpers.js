@@ -47,7 +47,58 @@ const transStringToArray = (obj, key) => {
     return obj;
 }
 
+const parseSort = (sort, table) => {
+    let isPass = true;
+    const defaultValue = [['id', 'asc']];
+    const regexSort = /(asc|desc|ASC|DESC)/g;
+
+    try {
+        sort = (typeof sort === 'string') ? JSON.parse(sort).map((e, i) => i % 2 === 0 ? (e.includes('.') ? sequelize.literal(`\`${e}\``) : sequelize.col(`${table}.${e}`)) : e) : defaultValue;
+        if (sort.length % 2 === 0) {
+            sort = _.chunk(sort, 2) || defaultValue;
+            sort.map(element => {
+                if (!element[1].match(regexSort)) {
+                    isPass = false;
+                }
+            });
+        } else {
+            isPass = false;
+        }
+        if (isPass) {
+            return sort;
+        } else {
+            return defaultValue
+        }
+    } catch (e) {
+        return defaultValue
+    }
+};
+
+const atrributesHelper = (attributes, exclude) => {
+    let att = [];
+    if (attributes) {
+        att = attributes.split(',');
+        if (exclude)
+            exclude.forEach(e => {
+                const index = att.indexOf(e);
+
+                if (index !== -1)
+                    att.splice(index, 1);
+            })
+        att = att.length > 0 ? att : {exclude: exclude};
+        return att;
+    } else {
+        att = {exclude: []};
+        return att;
+    }
+}
+
+const filterPickKey = (param) => _.pickBy(param, prop => prop !== undefined);
+
 export default {
     makeStringFilterRelatively,
-    transStringToArray
+    transStringToArray,
+    parseSort,
+    atrributesHelper,
+    filterPickKey
 }

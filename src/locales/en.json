@@ -10,6 +10,7 @@
   "user.active.key.invalid": "Invalid token active",
   "user.active.key.timeout": "Token timeout",
   "notfound": "Not found",
+  "exist": "Record exist",
   "success": "Successfully",
   "failure": "Failure"
 }
