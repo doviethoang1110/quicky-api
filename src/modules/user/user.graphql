@@ -1,0 +1,18 @@
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    phone: String
+    avatar: String
+}
+
+type Facebook {
+    id: String
+    name: String
+}
+
+type UserResult {
+    users: [User]
+    currentPage: Int
+    totalPage: Int
+}

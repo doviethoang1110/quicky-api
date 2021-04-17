@@ -1,0 +1,16 @@
+{
+	"user.register.invalidParameter": "Định dạng truyền đi không đúng",
+	"user.login.invalidParameter": "Định dạng đăng nhập không đúng",
+	"user.login.success": "Đăng nhập thành công",
+	"user.login.failure": "Đăng nhập thất bại",
+	"user.register.successful": "Đăng ký thành công",
+	"user.exist": "Tài khoản đã tồn tại",
+	"user.unauthenticated": "Bạn chưa đăng nhập",
+	"token.timeout": "Token đã hết hạn",
+	"user.active.key.invalid": "Chuỗi kích hoặc tài khoản không hợp lệ",
+	"user.active.key.timeout": "Chuỗi kích hoạt hết hạn",
+	"notfound": "Không tìm thấy",
+	"exist": "Bản ghi đã tồn tại",
+	"success": "Thành công",
+	"failure": "Thất bại"
+}

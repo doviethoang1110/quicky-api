@@ -1,0 +1,16 @@
+{
+  "user.register.invalidParameter": "Invalid parameters",
+  "user.login.invalidParameter": "Login parameters invalid",
+  "user.login.success": "Login successfully",
+  "user.login.failure": "Login failure",
+  "user.register.successful": "Register successfully",
+  "user.exist": "User existed",
+  "user.unauthenticated": "User unauthenticated",
+  "token.timeout": "Token timeout",
+  "user.active.key.invalid": "Invalid token active",
+  "user.active.key.timeout": "Token timeout",
+  "notfound": "Not found",
+  "exist": "Record exist",
+  "success": "Successfully",
+  "failure": "Failure"
+}
