@@ -63,7 +63,7 @@ export const logSystemError = (res, error, functionName) => {
     errorObj.message = error.message;
     errorObj.functionName = functionName;
     logger.error(`Error in ${functionName}: ${JSON.stringify(errorObj)}`);
-    return res.json(responseMessages.responseError(HttpStatusCode.INTERNAL_SERVER, error, `SYSTEM_ERROR: ${errorObj.id}`));
+    res.json(responseMessages.responseError(HttpStatusCode.INTERNAL_SERVER, error, `SYSTEM_ERROR: ${errorObj.id}`));
 }
 
 

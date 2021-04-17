@@ -1,0 +1,7 @@
+type Note {
+    id: ID!
+    title: String!
+    details: String
+    tag: String
+    date: String
+}

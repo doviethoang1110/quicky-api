@@ -29,8 +29,8 @@ export const authGraphql = async ({req}) => {
         const authHeader = req.headers['authorization'];
         const token = authHeader && authHeader.replace("Bearer ", "");
         if (!token) throw new AuthenticationError("Bạn chưa đăng nhập");
-        await verify(token, secret.jwt_key);
-        return {loggedIn: true};
+        const {user: {id}} = await verify(token, secret.jwt_key);
+        return {loggedIn: true, usersId: id};
     } catch (error) {
         return {loggedIn: false};
     }

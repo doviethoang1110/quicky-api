@@ -7,19 +7,12 @@ import i18n from 'i18n';
 
 export const get_list = async ({attributes, limit, page, filter, sort, usersId}) => {
     try {
-        if (page) {
-            const temp = (page - 1) * limit
-            page = temp > 0 ? temp : 0;
-        }
         let whereFilter = {...filter, usersId};
-        const result = await REPOSITORY.findAll(notes, {
+        return await REPOSITORY.findAll(notes, {
             where: whereFilter,
             attributes,
-            order: sort,
-            limit,
-            offset: page * limit
+            order: sort
         });
-        return responseMessages.responseSuccess(HttpStatusCode.OK, result);
     } catch (e) {
         logger.error(`Error in get list notes ${e.message}`);
         throw e;

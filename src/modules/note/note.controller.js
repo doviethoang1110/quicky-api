@@ -10,7 +10,7 @@ export const getList = async (req, res) => {
         const result = await get_list(param);
         res.json(result);
     } catch (error) {
-        return logSystemError(res, error, 'noteController - get list');
+        logSystemError(res, error, 'noteController - get list');
     }
 }
 

@@ -72,11 +72,11 @@ export const changeAvatar = async (id, entity) => {
             where: {id},
             attributes: ['id']
         });
-        if (found) return responseMessages.responseError(HttpStatusCode.NOT_FOUND, {message: i18n.__("notfound")});
+        if (!found) return responseMessages.responseError(HttpStatusCode.NOT_FOUND, {message: i18n.__("notfound")});
         await REPOSITORY.update(users, entity, {where: {id}});
         const finalResult = await REPOSITORY.findOne(users, {
             where: {id},
-            attributes: ['avatar']
+            attributes: ['id', 'name', 'email', 'phone', 'birthday', 'avatar']
         });
         return responseMessages.responseSuccess(HttpStatusCode.OK, finalResult);
     } catch (e) {

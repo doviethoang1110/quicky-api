@@ -72,6 +72,6 @@ export const noteFilter = async (req, res, next) => {
         res.locals.param = data;
         next();
     } catch (e) {
-        return logSystemError(res, e.message)
+        logSystemError(res, e.message)
     }
 }
