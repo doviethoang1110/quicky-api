@@ -1,4 +1,4 @@
-import {users, user, getUsers, getUsersById} from '../../modules/user/user.resolver';
+import {users, user, getUsers, getUsersById, findListFriends} from '../../modules/user/user.resolver';
 import {getNotes} from '../../modules/note/note.resolver';
 
 export default {
@@ -7,6 +7,7 @@ export default {
         getUsers,
         getUsersById,
         getNotes,
-        user
+        user,
+        findListFriends
     }
 }

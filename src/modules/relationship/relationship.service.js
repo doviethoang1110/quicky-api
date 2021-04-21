@@ -1,26 +1,20 @@
-import HTTP from "../constants";
-import responseMessages from "../helpers/responseMessages";
-import generateErrors from "../helpers/constrainsErrors";
+import REPOSITORY from "../../repositories";
+import {relationships, users, sequelize} from "../../models";
+import {logger} from "../../helpers/customLogger";
+import _ from 'lodash';
 
-const { RelationshipRepository } = require('../repositories');
-
-class RelationshipService {
-
-    constructor(container) {
-        this.relationshipRepository = container.get(RelationshipRepository);
-    }
-
-    async create(data) {
-        try {
-            const { id } = await this.relationshipRepository.create(data);
-
-            return { status: HTTP.CREATED, body: responseMessages.responseSuccess({message: 'Gửi lời mời thành công'}) };
-        } catch (err) {
-            console.log('services-errors', err);
-            if(err.errors) err = generateErrors.errors(err.errors)
-            throw { status: HTTP.BAD_REQUEST, body: responseMessages.responseError(HTTP.BAD_REQUEST_MESSAGE, err) };
-        }
+export const findListFriendsService = async (where, limit, page) => {
+    try {
+        const whereFilter = _.pick(where, ['id']);
+        const result = await sequelize.query('call findListFriends(:in_usersId)', {
+            replacements: {
+                in_usersId: whereFilter.id || 0
+            }
+        });
+        if (result.length > 0) return result;
+        else return [];
+    } catch (error) {
+        logger.error(`relationship service paginate ${error.message}`);
+        throw error;
     }
 }
-
-module.exports = RelationshipService;

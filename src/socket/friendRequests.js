@@ -1,8 +1,9 @@
 import client from "../utils/redis";
 import REPOSITORY from '../repositories';
-import {relationships} from '../models';
+import {relationships, users} from '../models';
+import {logger} from "../helpers/customLogger";
 
-const friendRequest = (socket, users) => {
+const friendRequest = (socket) => {
     socket.on("SEND_ADD_FRIEND_REQUEST", async ({sender, receiver}) => {
         try {
             const unique = await REPOSITORY.findOne(relationships, {
@@ -91,6 +92,21 @@ const friendRequest = (socket, users) => {
             } else throw new Error(socket.request.__("exist"))
         } catch (error) {
             console.log(error);
+            socket.emit("FAILURE", error.message);
+        }
+    });
+
+    socket.on("GET_PROFILE", async data => {
+        try {
+            const found = await REPOSITORY.findOne(users, {
+                where: {
+                    id: data
+                },
+                attributes: {exclude: ['password', 'isActive']}
+            });
+            socket.emit("GET_PROFILE_SUCCESS", found);
+        } catch (e) {
+            logger.error(`error in get profile socket ${e.message}`);
             socket.emit("FAILURE", error.message);
         }
     });

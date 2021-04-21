@@ -1,4 +1,5 @@
 import UserService, {findUsersById, paginate} from './user.service';
+import {findListFriendsService} from '../relationship/relationship.service';
 import {AuthenticationError} from 'apollo-server-express';
 import graphqlFields from 'graphql-fields';
 import filterHelpers from "../../helpers/filterHelpers";
@@ -39,4 +40,15 @@ export const user = async (root, {id: _id}, context, info) => {
     if (!context.loggedIn) throw new AuthenticationError("Bạn chưa đăng nhập");
     const selections = Object.keys(graphqlFields(info)).join(' ');
     return await UserService.findOne({_id}, selections);
+}
+
+export const findListFriends = async (root, {filter}, context) => {
+    try{
+        if (!context.loggedIn) throw new AuthenticationError("Bạn chưa đăng nhập")
+        const condition = typeof filter === 'string' ? JSON.parse(filter) : filter;
+        return await findListFriendsService(condition);
+    }catch (e) {
+        logger.error(`error in findListFriendResolver ${e.message}`);
+        throw e;
+    }
 }
