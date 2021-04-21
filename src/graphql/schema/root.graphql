@@ -4,6 +4,7 @@
 type Query {
     users(filter: String, sort: String): [User],
     getUsers(filter: String, page: Int, limit: Int): UserResult,
+    getUsersById(id: Int!): User,
     getNotes(filter: String, sort: String, attributes: String): [Note],
     user(id: ID!): User
 }

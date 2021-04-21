@@ -12,5 +12,6 @@
 	"notfound": "Không tìm thấy",
 	"exist": "Bản ghi đã tồn tại",
 	"success": "Thành công",
-	"failure": "Thất bại"
+	"failure": "Thất bại",
+	"socket.disconnect": "Ngắt kết nối"
 }

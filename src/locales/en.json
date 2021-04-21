@@ -12,5 +12,6 @@
   "notfound": "Not found",
   "exist": "Record exist",
   "success": "Successfully",
-  "failure": "Failure"
+  "failure": "Failure",
+  "socket.disconnect": "Disconnect"
 }

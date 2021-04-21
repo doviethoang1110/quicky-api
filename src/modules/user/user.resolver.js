@@ -1,7 +1,8 @@
-import UserService, {paginate} from './user.service';
+import UserService, {findUsersById, paginate} from './user.service';
 import {AuthenticationError} from 'apollo-server-express';
 import graphqlFields from 'graphql-fields';
 import filterHelpers from "../../helpers/filterHelpers";
+import {logger} from "../../helpers/customLogger";
 
 export const users = async (root, args, context, info) => {
     const selections = Object.keys(graphqlFields(info)).join(' ');
@@ -22,6 +23,15 @@ export const getUsers = async (root, {filter, page, limit}, context, info) => {
         return await paginate(options, limit, page);
     }catch (e) {
         console.log(e)
+    }
+}
+
+export const getUsersById = async (root, {id}, context) => {
+    try {
+        if (!context.loggedIn) throw new AuthenticationError("Bạn chưa đăng nhập");
+        return await findUsersById(context.usersId, id);
+    } catch (e) {
+        logger.error(`error resolver getUsersById ${e.message}`);
     }
 }
 

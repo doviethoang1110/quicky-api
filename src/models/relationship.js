@@ -20,19 +20,20 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
             field: 'userActionId'
-        },
-        type: {
-            type: DataTypes.ENUM('facebook', 'google', 'twitter'),
-            allowNull: false,
-            defaultValue: 'facebook',
-            field: 'type'
         }
     }, {
         tableName: 'relationships',
         timestamps: true
     });
     Relationships.associate = function (models) {
-        // define association of this model
+        Relationships.belongsTo(models.users, {
+            foreignKey: 'senderId',
+            as: 'senders'
+        });
+        Relationships.belongsTo(models.users, {
+            foreignKey: 'receiverId',
+            as: 'receivers'
+        });
     };
     return Relationships;
 };

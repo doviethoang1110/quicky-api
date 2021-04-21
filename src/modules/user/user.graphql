@@ -4,6 +4,9 @@ type User {
     email: String!
     phone: String
     avatar: String
+    birthday: String
+    userActionId: Int
+    status: Int
 }
 
 type Facebook {

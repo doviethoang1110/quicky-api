@@ -2,13 +2,17 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('relationships', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER.UNSIGNED
+      },
       senderId: {
         type: Sequelize.INTEGER.UNSIGNED,
-        primaryKey: true
       },
       receiverId: {
         type: Sequelize.INTEGER.UNSIGNED,
-        primaryKey: true
       },
       status: {
         type: Sequelize.INTEGER.UNSIGNED
