@@ -1,18 +1,28 @@
-import REPOSITORY from "../../repositories";
-import {relationships, users, sequelize} from "../../models";
+import {sequelize} from "../../models";
 import {logger} from "../../helpers/customLogger";
-import _ from 'lodash';
 
-export const findListFriendsService = async (where, limit, page) => {
+export const findListFriendsService = async (where, page, limit) => {
     try {
-        const whereFilter = _.pick(where, ['id']);
-        const result = await sequelize.query('call findListFriends(:in_usersId)', {
+        if (page) {
+            const temp = (page - 1) * limit
+            page = temp > 0 ? temp : 0;
+        }
+        let result = await sequelize.query('call findListFriends(:in_usersId, :in_username, :in_offset, :in_limit, @out_totalCount);select @out_totalCount;', {
             replacements: {
-                in_usersId: whereFilter.id || 0
-            }
+                in_usersId: where.id || 0,
+                in_username: where.name || null,
+                in_offset: page * limit || 0,
+                in_limit: limit || 999
+            },
+            type: sequelize.QueryTypes.SELECT
         });
-        if (result.length > 0) return result;
-        else return [];
+        const response = {
+            totalPage: Math.ceil(result[2][0]['@out_totalCount'] / limit),
+            currentPage: page + 1
+        };
+        result = Object.values(result[0]).map(r => ({...r}));
+        if (result.length > 0) return {users: result, ...response};
+        else return {users: null, ...response};
     } catch (error) {
         logger.error(`relationship service paginate ${error.message}`);
         throw error;
