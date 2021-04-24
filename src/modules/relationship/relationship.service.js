@@ -11,7 +11,7 @@ export const findListFriendsService = async (where, page, limit) => {
             replacements: {
                 in_usersId: where.id || 0,
                 in_username: where.name || null,
-                in_offset: page * limit || 0,
+                in_offset: page || 0,
                 in_limit: limit || 999
             },
             type: sequelize.QueryTypes.SELECT
