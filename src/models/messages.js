@@ -28,7 +28,14 @@ module.exports = (sequelize, DataTypes) => {
         paranoid: true
     });
     Messages.associate = function (models) {
-        // define association of this model
+        Messages.belongsTo(models.conversations, {
+            foreignKey: 'conversationsId',
+            as: 'conversations'
+        });
+        Messages.belongsTo(models.users, {
+            foreignKey: 'usersId',
+            as: 'users'
+        })
     };
     return Messages;
 };

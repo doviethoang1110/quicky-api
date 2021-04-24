@@ -1,8 +1,0 @@
-type Conversation {
-    id: ID!
-    name: String!
-    creator: User
-    lastMessage: String
-    image: String
-    type: String
-}

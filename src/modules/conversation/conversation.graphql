@@ -1,0 +1,15 @@
+type Conversation {
+    id: ID!
+    name: String!
+    creator: User
+    lastMessage: Message
+    image: String
+    type: String
+    participants: [User]
+}
+
+type ConversationResult {
+    totalPage: Int
+    currentPage: Int
+    conversations: [Conversation]
+}

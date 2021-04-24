@@ -21,7 +21,7 @@ import i18n from './middlewares/i18n';
 // import middleware
 import middleware from './middlewares';
 import {noteRoutes} from "./modules/note/note.route";
-import {conversationRoutes} from "./modules/conversations/conversation.route";
+import {conversationRoutes} from "./modules/conversation/conversation.route";
 
 // Cors
 const corsOptions = {

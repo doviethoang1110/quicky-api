@@ -15,7 +15,14 @@ module.exports = (sequelize, DataTypes) => {
         timestamps: true
     });
     Participants.associate = function (models) {
-        // define association of this model
+        Participants.belongsTo(models.users, {
+           foreignKey: 'usersId',
+           as: 'users'
+        });
+        Participants.belongsTo(models.conversations, {
+            foreignKey: 'conversationsId',
+            as: 'conversations'
+        });
     };
     return Participants;
 };
