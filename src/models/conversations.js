@@ -39,6 +39,14 @@ module.exports = (sequelize, DataTypes) => {
         Conversations.belongsTo(models.users, {
             foreignKey: 'creatorId',
             as: 'creators'
+        });
+        Conversations.hasMany(models.messages, {
+            foreignKey: 'conversationsId',
+            as: 'messages'
+        });
+        Conversations.hasMany(models.participants, {
+            foreignKey: 'conversationsId',
+            as: 'participants'
         })
     };
     return Conversations;

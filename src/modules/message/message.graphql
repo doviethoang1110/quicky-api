@@ -1,7 +1,14 @@
 type Message {
     id: ID!
     conversation: Conversation
-    user: User
+    users: User
     type: String
     message: String
+    createdAt: String
+}
+
+type MessageResult {
+    totalPage: Int,
+    currentPage: Int,
+    messages: [Message]
 }

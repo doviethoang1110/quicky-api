@@ -10,5 +10,6 @@ type Query {
     findListFriends(filter: String, page: Int, limit: Int): UserResult,
     getNotes(filter: String, sort: String, attributes: String): [Note],
     user(id: ID!): User,
-    findConversations(filter: String, attributes: String, page: Int, limit: Int): ConversationResult
+    findConversations(filter: String, attributes: String, page: Int, limit: Int): ConversationResult,
+    findMessages(conversationsId: Int, attributes: String, page: Int, limit: Int): MessageResult
 }
