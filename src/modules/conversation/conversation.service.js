@@ -4,6 +4,7 @@ import responseMessages from "../../helpers/responseMessages";
 import HttpStatusCode from "../../constants";
 import {logger} from "../../helpers/customLogger";
 import _ from 'lodash';
+import filterHelpers from "../../helpers/filterHelpers";
 
 export const store = async (param) => {
     try {
@@ -33,17 +34,25 @@ export const findListConversation = async (filter, attributes, page, limit) => {
             const temp = (page - 1) * limit
             page = temp > 0 ? temp : 0;
         }
+        let whereFilterName = _.pick(filter, ['name', 'type']);
+        let whereFilter = _.omit(filter, ['name', 'type']);
+        if (Object.keys(whereFilterName).length > 0) {
+            if (whereFilterName.type === 'all') delete whereFilterName.type;
+            whereFilterName = await filterHelpers.makeStringFilterRelatively(['name'], whereFilterName, 'conversations');
+        }
         let result = await REPOSITORY.findAndCountAll(participants, {
-            where: {
-                usersId: filter.usersId
-            },
+            where: whereFilter,
             limit,
             offset: page,
+            order: [
+                ['conversations', 'updatedAt', 'DESC']
+            ],
             attributes: ['conversationsId'],
             include: [
                 {
                     model: conversations,
                     as: 'conversations',
+                    where: Object.keys(whereFilterName).length > 0 ? whereFilterName : {},
                     attributes,
                     include: [
                         {

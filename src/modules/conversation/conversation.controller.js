@@ -1,4 +1,4 @@
-import {store} from ".//conversation.service";
+import {store} from "./conversation.service";
 import {logSystemError} from "../../helpers/customLogger";
 
 export const conversationStore = async (req, res) => {
