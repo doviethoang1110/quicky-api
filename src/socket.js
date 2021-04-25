@@ -3,6 +3,7 @@ import {application} from './config';
 import client from "./utils/redis";
 import friendRequests from "../src/socket/friendRequests";
 import conversation from "./socket/conversations";
+import message from "./socket/messages";
 const i18n = require('i18n');
 const path = require('path');
 
@@ -35,8 +36,9 @@ export const initialize = server => {
         });
         friendRequests(socket);
         conversation(socket);
+        message(socket);
         socket.on('disconnect', async function () {
-            await client.delAsync(socket.request.usersId);
+            await client.delAsync(`${socket.request.usersId}`);
             console.log(req.__("socket.disconnect"))
         });
     });
