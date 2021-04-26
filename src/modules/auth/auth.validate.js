@@ -1,16 +1,18 @@
 import Joi from 'joi';
 import validator from "../../helpers/validator";
+import regexPattern from "../../helpers/regexPattern";
 
 const DEFAULT_SCHEMA = {
     name: Joi.string()
         .min(5)
         .max(30)
+        .regex(regexPattern.name)
         .required(),
 
     email: Joi.string()
         .min(5)
         .max(30)
-        .regex(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)
+        .regex(regexPattern.email)
         .required(),
 
     birthday: Joi.date().allow(null),
