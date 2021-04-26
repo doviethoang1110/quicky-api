@@ -6,13 +6,21 @@ import {middleware} from '../config';
 const registerLimiter = rateLimit({
     windowMs: 60 * 1000,
     max: 1,
-    message: "Không được đăng ký 2 tài khoản trong 1p"
+    message: {
+        success: false,
+        errors: [],
+        message: "Không đăng ký quá 2 tài khoản trong 1p"
+    }
 });
 
 const apiLimiter = rateLimit({
     windowMs: middleware.limit_time,
     max: middleware.limit_request,
-    message: "Too many requests from this IP, please try again after 15 minutes"
+    message: {
+        message: "Too many requests from this IP, please try again after 15 minutes",
+        errors: [],
+        success: false
+    }
 });
 
 const speedLimiter = slowDown({

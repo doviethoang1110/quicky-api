@@ -1,23 +1,19 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('relationships', {
+    await queryInterface.createTable('participants', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER.UNSIGNED
       },
-      senderId: {
-        type: Sequelize.INTEGER.UNSIGNED,
-      },
-      receiverId: {
-        type: Sequelize.INTEGER.UNSIGNED,
-      },
-      status: {
+      usersId: {
+        allowNull: false,
         type: Sequelize.INTEGER.UNSIGNED
       },
-      userActionId: {
+      conversationsId: {
+        allowNull: false,
         type: Sequelize.INTEGER.UNSIGNED
       },
       createdAt: {
@@ -31,6 +27,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('relationships');
+    await queryInterface.dropTable('participants');
   }
 };

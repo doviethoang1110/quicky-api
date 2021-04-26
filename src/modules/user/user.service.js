@@ -1,4 +1,5 @@
 import REPOSITORY from '../../repositories';
+import {sequelize, Op} from '../../models';
 import {users, relationships} from '../../models';
 import {logger} from "../../helpers/customLogger";
 import responseMessages from "../../helpers/responseMessages";
@@ -24,6 +25,60 @@ export const update = async (id, entity) => {
         throw e;
     }
 };
+
+export const findUsersById = async (usersId, id) => {
+    try {
+        const found = await REPOSITORY.findOne(relationships, {
+            attributes: ['status', 'userActionId'],
+            where: {
+                $or: [
+                    {
+                        senderId: usersId,
+                        receiverId: id
+                    },
+                    {
+                        receiverId: usersId,
+                        senderId: id
+                    }
+                ]
+            },
+            include: [
+                {
+                    model: users,
+                    as: 'senders',
+                    required: true,
+                    attributes: ['id', 'name', 'email', 'avatar', 'birthday']
+                },
+                {
+                    model: users,
+                    as: 'receivers',
+                    required: true,
+                    attributes: ['id', 'name', 'email', 'avatar', 'birthday']
+                },
+            ]
+        });
+        if (found?.senders || found?.receivers) {
+            const newArray = [found.senders.dataValues, found.receivers.dataValues];
+            const result = newArray.reduce((a, b) => {
+                if (+b.id === +id) return {...a, ...b, status: found.status, userActionId: found.userActionId};
+                else return a;
+            }, {});
+            if (!found || !result) throw new Error('NOT FOUND');
+            return result;
+        } else {
+            const temp = await REPOSITORY.findOne(users, {
+                where: {
+                    id
+                },
+                attributes: ['id', 'name', 'email', 'avatar', 'birthday']
+            });
+            return {...temp.dataValues, status: null, userActionId: null};
+        }
+    } catch (e) {
+        logger.error(`user service ${e.message}`);
+        throw e;
+    }
+}
 
 export const paginate = async (where, limit, page) => {
     try {

@@ -68,11 +68,11 @@ class ModelEntity {
      * @param {Object} entity
      */
     static bulkCreate(model, entity) {
-        return Promise.try(() => {
-            return model.bulkCreate(entity);
-        }).catch(error => {
-            throw error;
-        });
+        return model.bulkCreate(entity)
+            .catch(error => {
+                logger.error(`${model} entity bulk create error`, error)
+                throw error;
+            });
     }
 
     /**

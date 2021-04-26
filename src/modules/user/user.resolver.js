@@ -1,7 +1,9 @@
-import UserService, {paginate} from './user.service';
+import UserService, {findUsersById, paginate} from './user.service';
+import {findListFriendsService} from '../relationship/relationship.service';
 import {AuthenticationError} from 'apollo-server-express';
 import graphqlFields from 'graphql-fields';
 import filterHelpers from "../../helpers/filterHelpers";
+import {logger} from "../../helpers/customLogger";
 
 export const users = async (root, args, context, info) => {
     const selections = Object.keys(graphqlFields(info)).join(' ');
@@ -13,15 +15,24 @@ export const users = async (root, args, context, info) => {
 }
 
 export const getUsers = async (root, {filter, page, limit}, context, info) => {
-    try{
+    try {
         if (!context.loggedIn) throw new AuthenticationError("Bạn chưa đăng nhập")
         const condition = JSON.parse(filter);
         const options = await filterHelpers.makeStringFilterRelatively(['name'], condition, 'users');
         options.isActive = true;
         options.id = {$ne: condition.id};
         return await paginate(options, limit, page);
-    }catch (e) {
+    } catch (e) {
         console.log(e)
+    }
+}
+
+export const getUsersById = async (root, {id}, context) => {
+    try {
+        if (!context.loggedIn) throw new AuthenticationError("Bạn chưa đăng nhập");
+        return await findUsersById(context.usersId, id);
+    } catch (e) {
+        logger.error(`error resolver getUsersById ${e.message}`);
     }
 }
 
@@ -29,4 +40,15 @@ export const user = async (root, {id: _id}, context, info) => {
     if (!context.loggedIn) throw new AuthenticationError("Bạn chưa đăng nhập");
     const selections = Object.keys(graphqlFields(info)).join(' ');
     return await UserService.findOne({_id}, selections);
+}
+
+export const findListFriends = async (root, {filter, page, limit}, context) => {
+    try {
+        if (!context.loggedIn) throw new AuthenticationError("Bạn chưa đăng nhập")
+        const condition = typeof filter === 'string' ? JSON.parse(filter) : filter;
+        return await findListFriendsService(condition, page, limit);
+    } catch (e) {
+        logger.error(`error in findListFriendResolver ${e.message}`);
+        throw e;
+    }
 }
