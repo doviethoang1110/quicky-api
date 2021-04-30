@@ -11,8 +11,9 @@ const client = redis.createClient({
 // client.keys('*', function (err, keys) {
 //     if (err) return console.log(err);
 //
-//     for(var i = 0, len = keys.length; i < len; i++) {
-//         console.log(keys[i]);
+//     for (var i = 0, len = keys.length; i < len; i++) {
+//         console.log(keys[i])
+//         client.getAsync(`${keys[i]}`).then(r => console.log('aaa',r));
 //     }
 // });
 

@@ -1,8 +1,9 @@
 import {logger} from "../helpers/customLogger";
 import REPOSITORY from '../repositories';
 import {conversations, sequelize, participants, users, messages} from '../models';
+import client from "../utils/redis";
 
-const message = (socket) => {
+const message = (socket, io) => {
     socket.on("NEW_CHAT", async ({id, name, type = 'single', image, creatorId, participants: array}) => {
         try {
             const result = await REPOSITORY.findOne(conversations, {
@@ -39,6 +40,11 @@ const message = (socket) => {
 
     socket.on("GET_NEW_CHAT", async (data) => {
         socket.emit("GET_CONVERSATION_SUCCESS", data);
+    });
+
+    socket.on("SEND_MESSAGE", async data => {
+        console.log('server nhận', data);
+        io.to(`conversation${data.conversationsId}`).emit("RECEIVE_MESSAGE", data);
     });
 }
 

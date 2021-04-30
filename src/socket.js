@@ -4,8 +4,11 @@ import client from "./utils/redis";
 import friendRequests from "../src/socket/friendRequests";
 import conversation from "./socket/conversations";
 import message from "./socket/messages";
+import {user} from "./modules/user/user.resolver";
 const i18n = require('i18n');
 const path = require('path');
+
+const users = {};
 
 i18n.configure({
     locales: ['en', 'vi'],
@@ -27,19 +30,20 @@ export const initialize = server => {
         i18n.init(req);
         const locale = req.headers['accept-language'] || 'en';
         i18n.setLocale(locale);
+        let key;
         socket.on("SET_USER_ID", async (id) => {
-            await client.setAsync(`${id}`, `${socket.id}`);
-            socket.request.usersId = id;
+            if (id) users[`${id}`] = socket;
+            key = id;
         });
         socket.on("CREATE_CONVERSATION", (data) => {
            socket.emit("SEND_NEW_CONVERSATION", data);
         });
-        friendRequests(socket);
-        conversation(socket);
-        message(socket);
+        friendRequests(socket, users);
+        conversation(socket, users);
+        message(socket, io);
         socket.on('disconnect', async function () {
-            await client.delAsync(`${socket.request.usersId}`);
-            console.log(req.__("socket.disconnect"))
+            console.log(req.__("socket.disconnect"));
+            delete users[key];
         });
     });
 }
