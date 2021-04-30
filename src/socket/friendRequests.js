@@ -3,7 +3,7 @@ import REPOSITORY from '../repositories';
 import {relationships, users} from '../models';
 import {logger} from "../helpers/customLogger";
 
-const friendRequest = (socket, users) => {
+const friendRequest = (socket, usersInSystem) => {
     socket.on("SEND_ADD_FRIEND_REQUEST", async ({sender, receiver}) => {
         try {
             const unique = await REPOSITORY.findOne(relationships, {
@@ -19,7 +19,7 @@ const friendRequest = (socket, users) => {
                     receiverId: receiver,
                     userActionId: sender.id
                 });
-                const found = users[`${receiver}`];
+                const found = usersInSystem[`${receiver}`];
                 if (found) socket.to(found.id).emit("RECEIVED_ADD_FRIEND_REQUEST", {
                     id: sender.id,
                     name: sender.name,
@@ -49,7 +49,7 @@ const friendRequest = (socket, users) => {
                         receiverId: receiver
                     }
                 });
-                const foundSocket = users[`${receiver}`];
+                const foundSocket = usersInSystem[`${receiver}`];
                 if (foundSocket) socket.to(foundSocket.id).emit("REMOVE_ADD_FRIEND_REQUEST_SUCCESS", {
                     id: sender.id,
                     name: sender.name,
@@ -82,7 +82,7 @@ const friendRequest = (socket, users) => {
                         receiverId: receiver.id
                     }
                 });
-                const foundSocket = users[`${sender}`];
+                const foundSocket = usersInSystem[`${sender}`];
                 if (foundSocket) socket.to(foundSocket.id).emit("ACCEPT_ADD_FRIEND_REQUEST_SUCCESS", {
                     id: receiver.id,
                     name: receiver.name,
@@ -107,7 +107,7 @@ const friendRequest = (socket, users) => {
             socket.emit("GET_PROFILE_SUCCESS", found);
         } catch (e) {
             logger.error(`error in get profile socket ${e.message}`);
-            socket.emit("FAILURE", error.message);
+            socket.emit("FAILURE", e.message);
         }
     });
 

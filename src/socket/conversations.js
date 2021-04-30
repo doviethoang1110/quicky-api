@@ -44,7 +44,7 @@ const conversation = (socket, usersInSystem) => {
                     }
                 ]
             });
-            if (result.participants && result.participants.length > 0) {
+            if (result && result.participants && result.participants.length > 0) {
                 let foundConversation = await client.getAsync(`conversation${result.id}`);
                 foundConversation = foundConversation && typeof foundConversation === 'string' && JSON.parse(foundConversation);
                 if (!foundConversation || (result.participants.length !== foundConversation.length)) {
