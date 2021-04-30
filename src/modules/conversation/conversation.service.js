@@ -40,32 +40,24 @@ export const findListConversation = async (filter, attributes, page, limit) => {
             if (whereFilterName.type === 'all') delete whereFilterName.type;
             whereFilterName = await filterHelpers.makeStringFilterRelatively(['name'], whereFilterName, 'conversations');
         }
-        let result = await REPOSITORY.findAndCountAll(participants, {
-            where: whereFilter,
+        let result = await REPOSITORY.findAndCountAll(conversations, {
+            where: Object.keys(whereFilterName).length > 0 ? whereFilterName : {},
             limit,
             offset: page,
             order: [
-                ['conversations', 'updatedAt', 'DESC']
+                ['updatedAt', 'DESC']
             ],
-            attributes: ['conversationsId'],
+            attributes: [...attributes, 'updatedAt'],
             include: [
                 {
-                    model: conversations,
-                    as: 'conversations',
-                    where: Object.keys(whereFilterName).length > 0 ? whereFilterName : {},
-                    attributes,
+                    model: messages,
+                    as: 'lastMessage',
+                    attributes: ['message', 'type'],
                     include: [
                         {
-                            model: messages,
-                            as: 'lastMessage',
-                            attributes: ['message', 'type'],
-                            include: [
-                                {
-                                    model: users,
-                                    as: 'users',
-                                    attributes: ['name']
-                                }
-                            ]
+                            model: users,
+                            as: 'users',
+                            attributes: ['name']
                         }
                     ]
                 }
@@ -74,24 +66,46 @@ export const findListConversation = async (filter, attributes, page, limit) => {
         let totalPage;
         let currentPage;
         if (result.rows.length > 0) {
+            const peoples = await REPOSITORY.findAll(conversations, {
+                where: {
+                    id: {$in: result.rows.map(r => r.id)}
+                },
+                attributes: ['id'],
+                include: [
+                    {
+                        model: participants,
+                        as: 'participants',
+                        attributes: ['usersId'],
+                        include: [
+                            {
+                                model: users,
+                                as: 'users',
+                                attributes: ['name']
+                            }
+                        ]
+                    }
+                ]
+            });
             totalPage = Math.ceil(result.count / limit);
             result = result.rows.reduce((a, b) => {
-                a.push(
-                    {
-                        id: b.conversations.id,
-                        name: b.conversations.name,
-                        type: b.conversations.type,
-                        image: b.conversations.image,
-                        lastMessage: {
-                            message: b.conversations?.lastMessage?.message || "",
-                            type: b.conversations?.lastMessage?.type || "",
-                            user: {
-                                name: b.conversations?.lastMessage?.users?.name || ""
-                            }
-                        },
-                    }
-                )
-                return a;
+                return [...a, {
+                    id: b.id,
+                    name: b.name,
+                    type: b.type,
+                    image: b.image,
+                    updatedAt: b.updatedAt,
+                    lastMessage: {
+                        message: b?.lastMessage?.message || "",
+                        type: b?.lastMessage?.type || "",
+                        user: {
+                            name: b?.lastMessage?.users?.name || ""
+                        }
+                    },
+                    participants: peoples.find(p => p.id === b.id).participants.map(p => ({
+                        id: p.usersId,
+                        name: p.users.name
+                    }))
+                }];
             }, []);
         } else {
             result = [];

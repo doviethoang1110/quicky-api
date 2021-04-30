@@ -6,6 +6,7 @@ type Conversation {
     image: String
     type: String
     participants: [User]
+    updatedAt: String
 }
 
 type ConversationResult {

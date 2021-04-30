@@ -33,7 +33,6 @@ const message = (socket, io) => {
             if (result) socket.emit("SEND_NEW_CONVERSATION", result);
             else {
                 const request = {id, name, type, image, creatorId, participants: array};
-                // console.log(request)
                 socket.emit("SEND_NEW_CONVERSATION", request);
             }
         } catch (error) {
@@ -47,7 +46,9 @@ const message = (socket, io) => {
     });
 
     socket.on("SEND_MESSAGE", async data => {
+        console.log('data', data)
         io.to(`conversation${data.conversationsId}`).emit("RECEIVE_MESSAGE", data);
+        io.to(`conversation${data.conversationsId}`).emit("RECEIVE_MESSAGE_ASIDE", data);
         // const found = JSON.parse(await client.getAsync(`messages_conversation${data.conversationsId}`));
         // if (found) await client.setAsync(`messages_conversation${data.conversationsId}`, JSON.stringify([...found, data]))
         // else await client.setAsync(`messages_conversation${data.conversationsId}`, JSON.stringify([data]));
