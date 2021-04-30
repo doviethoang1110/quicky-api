@@ -46,6 +46,19 @@ const message = (socket, io) => {
         console.log('server nhận', data);
         io.to(`conversation${data.conversationsId}`).emit("RECEIVE_MESSAGE", data);
     });
+
+    socket.on("TYPING", async (data) => {
+        socket.broadcast.to(`conversation${data.conversationsId}`).emit("TYPING_MESSAGE", {
+            conversationsId: data.conversationsId,
+            name: data.name,
+            avatar: data.avatar,
+            type: data.type
+        });
+    });
+
+    socket.on("CLEAR_TYPING", async (data) => {
+        socket.broadcast.to(`conversation${data.conversationsId}`).emit("RECEIVE_CLEAR_TYPING", data);
+    })
 }
 
 export default message;
