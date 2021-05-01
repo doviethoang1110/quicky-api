@@ -103,13 +103,14 @@ export const findListConversation = async (filter, attributes, page, limit) => {
                     lastMessage: {
                         message: b?.lastMessage?.message || "",
                         type: b?.lastMessage?.type || "",
-                        user: {
+                        users: {
                             name: b?.lastMessage?.users?.name || ""
                         }
                     },
                     participants: peoples.find(p => p.id === b.id).participants.map(p => ({
                         id: p.usersId,
-                        name: p.users.name
+                        name: p.users.name,
+                        avatar: p.users.avatar
                     }))
                 }];
             }, []);
