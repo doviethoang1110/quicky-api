@@ -50,6 +50,12 @@ export const findListConversation = async (filter, attributes, page, limit) => {
             attributes: [...attributes, 'updatedAt'],
             include: [
                 {
+                    model: participants,
+                    as: 'participants',
+                    attributes: ['usersId'],
+                    where: whereFilter
+                },
+                {
                     model: messages,
                     as: 'lastMessage',
                     attributes: ['message', 'type'],
@@ -80,7 +86,7 @@ export const findListConversation = async (filter, attributes, page, limit) => {
                             {
                                 model: users,
                                 as: 'users',
-                                attributes: ['name']
+                                attributes: ['name', 'avatar']
                             }
                         ]
                     }

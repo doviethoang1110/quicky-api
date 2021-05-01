@@ -40,7 +40,7 @@ export const initialize = server => {
         });
         friendRequests(socket, users);
         conversation(socket, users);
-        message(socket, io);
+        message(socket, io, users);
         socket.on('disconnect', async function () {
             console.log(req.__("socket.disconnect"));
             delete users[key];

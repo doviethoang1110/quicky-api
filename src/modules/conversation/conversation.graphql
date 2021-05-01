@@ -1,6 +1,6 @@
 type Conversation {
     id: ID!
-    name: String!
+    name: String
     creator: User
     lastMessage: Message
     image: String

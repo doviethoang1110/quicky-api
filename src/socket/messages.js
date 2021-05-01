@@ -2,8 +2,9 @@ import {logger} from "../helpers/customLogger";
 import REPOSITORY from '../repositories';
 import {conversations, sequelize, participants, users, messages} from '../models';
 import client from "../utils/redis";
+import _ from 'lodash';
 
-const message = (socket, io) => {
+const message = (socket, io, usersInSystem) => {
     socket.on("NEW_CHAT", async ({id, name, type = 'single', image, creatorId, participants: array}) => {
         try {
             const result = await REPOSITORY.findOne(conversations, {
@@ -47,8 +48,58 @@ const message = (socket, io) => {
 
     socket.on("SEND_MESSAGE", async data => {
         console.log('data', data)
-        io.to(`conversation${data.conversationsId}`).emit("RECEIVE_MESSAGE", data);
-        io.to(`conversation${data.conversationsId}`).emit("RECEIVE_MESSAGE_ASIDE", data);
+        if (data.conversationsId) {
+            await Promise.all([
+                io.to(`conversation${data.conversationsId}`).emit("RECEIVE_MESSAGE", data),
+                io.to(`conversation${data.conversationsId}`).emit("RECEIVE_MESSAGE_ASIDE", data)
+            ])
+        } else {
+            const conversation = await REPOSITORY.create(conversations, {creatorId: data.usersId});
+            const [mess] = await Promise.all([
+                REPOSITORY.create(messages, {
+                    conversationsId: conversation.id,
+                    usersId: data.usersId,
+                    message: data.message
+                }),
+                REPOSITORY.bulkCreate(participants, data.participants.map(p => {
+                    const found = usersInSystem[`${p}`];
+                    if (found) {
+                        const room = [...found.rooms].find(r => `conversation${conversation.id}` === r);
+                        if (!room) found.join(`conversation${conversation.id}`);
+                    }
+                    return {
+                        conversationsId: conversation.id,
+                        usersId: p
+                    }
+                }))
+            ]);
+            const [newVar] = await Promise.all([
+                REPOSITORY.findOne(conversations, {
+                    where: {id: conversation.id}, attributes: ['id', 'type'], include: [
+                        {
+                            model: participants,
+                            as: 'participants',
+                            attributes: ['usersId'],
+                            include: [
+                                {
+                                    model: users,
+                                    as: 'users',
+                                    attributes: ['name', 'avatar']
+                                }
+                            ]
+                        }
+                    ]
+                }),
+                REPOSITORY.update(conversations, {lastMessageId: mess.id}, {where: {id: conversation.id}})
+            ]);
+            io.to(`conversation${conversation.id}`).emit("RECEIVE_MESSAGE", {
+                message: _.omit(data, ['conversationsId']),
+                conversationsId: conversation.id,
+                type: conversation.type,
+                participants: newVar.participants
+            });
+            io.to(`conversation${conversation.id}`).emit("RECEIVE_MESSAGE_ASIDE", data);
+        }
         // const found = JSON.parse(await client.getAsync(`messages_conversation${data.conversationsId}`));
         // if (found) await client.setAsync(`messages_conversation${data.conversationsId}`, JSON.stringify([...found, data]))
         // else await client.setAsync(`messages_conversation${data.conversationsId}`, JSON.stringify([data]));
