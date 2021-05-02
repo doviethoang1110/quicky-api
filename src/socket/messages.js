@@ -2,6 +2,8 @@ import {logger} from "../helpers/customLogger";
 import REPOSITORY from '../repositories';
 import {conversations, sequelize, participants, users, messages} from '../models';
 import client from "../utils/redis";
+import _ from 'lodash';
+import {where} from "sequelize";
 
 const message = (socket, io, usersInSystem) => {
     socket.on("NEW_CHAT", async ({id, name, type = 'single', image, participants: array}) => {
@@ -53,15 +55,15 @@ const message = (socket, io, usersInSystem) => {
     });
 
     socket.on("SEND_MESSAGE", async data => {
-        console.log('data', data)
         if (data.conversationsId) {
             await Promise.all([
                 io.to(`conversation${data.conversationsId}`).emit("RECEIVE_MESSAGE", data),
                 io.to(`conversation${data.conversationsId}`).emit("RECEIVE_MESSAGE_ASIDE", data)
             ]);
-            // const found = JSON.parse(await client.getAsync(`messages_conversation${data.conversationsId}`));
-            // if (found) await client.setAsync(`messages_conversation${data.conversationsId}`, JSON.stringify([...found, data]))
-            // else await client.setAsync(`messages_conversation${data.conversationsId}`, JSON.stringify([data]));
+            const found = JSON.parse(await client.getAsync(`messages_conversation${data.conversationsId}`));
+            await client.setAsync(`messages_conversation${data.conversationsId}`, JSON.stringify(
+                found ? [...found, data] : [data]
+            ));
         } else {
             const conversation = await REPOSITORY.create(conversations, {creatorId: data.usersId});
             const [mess] = await Promise.all([
@@ -101,18 +103,14 @@ const message = (socket, io, usersInSystem) => {
                 }),
                 REPOSITORY.update(conversations, {lastMessageId: mess.id}, {where: {id: conversation.id}})
             ]);
-            io.to(`conversation${conversation.id}`).emit("RECEIVE_MESSAGE", {
+            const response = {
                 ...data,
                 conversationsId: conversation.id,
                 type: conversation.type,
                 participants: newVar.participants
-            });
-            io.to(`conversation${conversation.id}`).emit("RECEIVE_MESSAGE_ASIDE", {
-                ...data,
-                conversationsId: conversation.id,
-                type: conversation.type,
-                participants: newVar.participants
-            });
+            };
+            io.to(`conversation${conversation.id}`).emit("RECEIVE_MESSAGE", response);
+            io.to(`conversation${conversation.id}`).emit("RECEIVE_MESSAGE_ASIDE", response);
         }
     });
 
@@ -127,6 +125,23 @@ const message = (socket, io, usersInSystem) => {
 
     socket.on("CLEAR_TYPING", async (data) => {
         socket.broadcast.to(`conversation${data.conversationsId}`).emit("RECEIVE_CLEAR_TYPING", data);
+    });
+
+    socket.on("INSERT_MESSAGES", async data => {
+        const array = JSON.parse(await client.getAsync(`messages_conversation${data}`));
+        if (array && array.length > 0) {
+            await REPOSITORY.bulkCreate(messages, array.map(a => (_.omit(a, ['name', 'type']))));
+            const found = await REPOSITORY.findOne(messages, {
+                where: {
+                    conversationsId: data
+                },
+                order: [['createdAt', 'DESC']]
+            });
+            await Promise.all([
+                client.delAsync(`messages_conversation${data}`),
+                REPOSITORY.update(conversations, {lastMessageId: found.id}, {where: {id: data}})
+            ])
+        }
     })
 }
 
