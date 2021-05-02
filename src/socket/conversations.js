@@ -20,7 +20,7 @@ const conversation = (socket, usersInSystem) => {
                             {
                                 model: users,
                                 as: 'users',
-                                attributes: ['name', 'avatar', 'email', 'phone']
+                                attributes: ['name', 'avatar']
                             }
                         ]
                     },

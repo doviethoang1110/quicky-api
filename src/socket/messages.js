@@ -107,7 +107,12 @@ const message = (socket, io, usersInSystem) => {
                 type: conversation.type,
                 participants: newVar.participants
             });
-            io.to(`conversation${conversation.id}`).emit("RECEIVE_MESSAGE_ASIDE", data);
+            io.to(`conversation${conversation.id}`).emit("RECEIVE_MESSAGE_ASIDE", {
+                ...data,
+                conversationsId: conversation.id,
+                type: conversation.type,
+                participants: newVar.participants
+            });
         }
     });
 
