@@ -2,7 +2,8 @@ module.exports = (sequelize, DataTypes) => {
     const Conversations = sequelize.define('conversations', {
         name: {
             type: DataTypes.STRING(200),
-            allowNull: false,
+            allowNull: true,
+            defaultValue: null,
             field: 'name'
         },
         creatorId: {
@@ -17,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         image: {
             type: DataTypes.TEXT,
-            allowNull: false,
+            allowNull: true,
             field: 'image'
         },
         type: {

@@ -1,11 +1,12 @@
 type Conversation {
     id: ID!
-    name: String!
+    name: String
     creator: User
     lastMessage: Message
     image: String
     type: String
     participants: [User]
+    updatedAt: String
 }
 
 type ConversationResult {

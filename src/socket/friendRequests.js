@@ -3,7 +3,7 @@ import REPOSITORY from '../repositories';
 import {relationships, users} from '../models';
 import {logger} from "../helpers/customLogger";
 
-const friendRequest = (socket) => {
+const friendRequest = (socket, usersInSystem) => {
     socket.on("SEND_ADD_FRIEND_REQUEST", async ({sender, receiver}) => {
         try {
             const unique = await REPOSITORY.findOne(relationships, {
@@ -19,8 +19,8 @@ const friendRequest = (socket) => {
                     receiverId: receiver,
                     userActionId: sender.id
                 });
-                const found = await client.getAsync(`${receiver}`);
-                if (found) socket.to(found).emit("RECEIVED_ADD_FRIEND_REQUEST", {
+                const found = usersInSystem[`${receiver}`];
+                if (found) socket.to(found.id).emit("RECEIVED_ADD_FRIEND_REQUEST", {
                     id: sender.id,
                     name: sender.name,
                     status: result.status,
@@ -49,8 +49,8 @@ const friendRequest = (socket) => {
                         receiverId: receiver
                     }
                 });
-                const foundSocket = await client.getAsync(`${receiver}`);
-                if (foundSocket) socket.to(foundSocket).emit("REMOVE_ADD_FRIEND_REQUEST_SUCCESS", {
+                const foundSocket = usersInSystem[`${receiver}`];
+                if (foundSocket) socket.to(foundSocket.id).emit("REMOVE_ADD_FRIEND_REQUEST_SUCCESS", {
                     id: sender.id,
                     name: sender.name,
                     status: null,
@@ -82,8 +82,8 @@ const friendRequest = (socket) => {
                         receiverId: receiver.id
                     }
                 });
-                const foundSocket = await client.getAsync(`${sender}`);
-                if (foundSocket) socket.to(foundSocket).emit("ACCEPT_ADD_FRIEND_REQUEST_SUCCESS", {
+                const foundSocket = usersInSystem[`${sender}`];
+                if (foundSocket) socket.to(foundSocket.id).emit("ACCEPT_ADD_FRIEND_REQUEST_SUCCESS", {
                     id: receiver.id,
                     name: receiver.name,
                     status: 3,
@@ -107,7 +107,7 @@ const friendRequest = (socket) => {
             socket.emit("GET_PROFILE_SUCCESS", found);
         } catch (e) {
             logger.error(`error in get profile socket ${e.message}`);
-            socket.emit("FAILURE", error.message);
+            socket.emit("FAILURE", e.message);
         }
     });
 

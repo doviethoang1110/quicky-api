@@ -7,7 +7,6 @@ export const findConversations = async (root, {filter, attributes, page, limit},
     try {
         if (!context.loggedIn) throw new AuthenticationError("Bạn chưa đăng nhập")
         const condition = typeof filter === 'string' ? JSON.parse(filter) : filter;
-        condition.usersId = context.usersId;
         if (attributes) attributes = filterHelpers.atrributesHelper(attributes)
         return await findListConversation(condition, attributes, page, limit);
     } catch (e) {
